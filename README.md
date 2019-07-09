@@ -37,8 +37,7 @@ public class Student implements Serializable {
     private String name;
 }
 ```
-##### 2、实现 ` com.ugrong.framework.redis.domain.RedisKeyPrefix` 接口并且重写getPrefix和getDesc方法，例如用枚举实现：
-
+##### 2、实现[RedisKeyPrefix](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/domain/RedisKeyPrefix.java "RedisKeyPrefix")接口，并且重写getPrefix和getDesc方法，例如用枚举实现：
 ```java
 public enum StudentPrefix implements RedisKeyPrefix {
 
@@ -63,9 +62,7 @@ public enum StudentPrefix implements RedisKeyPrefix {
 ```
 >这样可以方便在key很多的情况下方便我们管理key,同时根据不同的业务场景统一key的规范
 
-##### 3、创建StudentRedisRepository，并且继承
-`com.ugrong.framework.redis.repository.impl.AbstractRedisRepository`
-##### 重写它的getKeyPrefix方法，例如：
+##### 3、创建StudentRedisRepository，并且继承[AbstractRedisRepository](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/impl/AbstractRedisRepository.java "AbstractRedisRepository")，重写它的getKeyPrefix方法，例如：
 ```java
 @Repository
 public class StudentRedisRepository extends AbstractRedisRepository<Student>{
@@ -78,34 +75,20 @@ public class StudentRedisRepository extends AbstractRedisRepository<Student>{
 ```
 ##### 这样就很方便地可以在service中使用:
 ```java
-    @Autowired
-    private StudentRedisRepository studentRedisRepository;
+@Autowired
+private StudentRedisRepository studentRedisRepository;
 ```
 ##### 来对redis中的Student进行操作了
-***
-##### 4、为了支持不同数据结构的存储，除了
-`com.ugrong.framework.redis.repository.impl.AbstractRedisRepository`
-##### 还提供了
-```java
-com.ugrong.framework.redis.repository.impl.AbstractHashRedisRepository
-com.ugrong.framework.redis.repository.impl.AbstractListRedisRepository
-com.ugrong.framework.redis.repository.impl.StringRedisRepositoryImpl
-```
-##### 大家可以自行查看和扩展
+
+##### 4、为了支持不同数据结构的存储，除了[AbstractRedisRepository](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/impl/AbstractRedisRepository.java "AbstractRedisRepository")，还提供了[AbstractHashRedisRepository](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/impl/AbstractRedisRepository.java "AbstractHashRedisRepository")，[AbstractListRedisRepository](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/impl/AbstractRedisRepository.java "AbstractListRedisRepository")，[StringRedisRepositoryImpl](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/impl/AbstractRedisRepository.java "StringRedisRepositoryImpl")，大家可以自行查看和扩展
 
 ### 三、锁的功能
-##### 1、项目中还支持了redis分布式锁，可以在
-`com.ugrong.framework.redis.lock.service.RedisLockService`
-##### 中查看提供的方法，详细注释可以在
-`com.ugrong.framework.redis.repository.LockRedisRepository`
-##### 中查看，具体实现可以在
-`com.ugrong.framework.redis.repository.impl.LockRedisRepositoryImpl`
-##### 中查看，同时可以根据自己的业务场景进行扩展
+##### 1、项目中还支持了redis分布式锁，可以在[RedisLockService](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/lock/service/RedisLockService.java "RedisLockService")中查看提供的方法，详细注释可以在[LockRedisRepository](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/LockRedisRepository.java "LockRedisRepository")中查看，具体实现可以在[LockRedisRepositoryImpl](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/impl/LockRedisRepositoryImpl.java "LockRedisRepositoryImpl")中查看，同时可以根据自己的业务场景进行扩展
 
 ##### 2、直接在项目中使用：
 ```java
-    @Autowired
-    private RedisLockService redisLockService;
+ @Autowired
+ private RedisLockService redisLockService;
 ```
 ##### 伪代码如下：
 ```java
@@ -122,13 +105,9 @@ try {
 ```
 ##### 注意：unlock时传的lockField，expectedValue要和lock时传的field，lockValue一致才能正确解锁
 
-##### 3、轮询的方式去获得锁。可以使用tryLock或tryLockWithDefaultTimeout方法来替代lock方法
+##### 3、可以使用tryLock或tryLockWithDefaultTimeout方法来替代lock方法以轮询的方式去获得锁。
 
-##### 4、提供了
-```java
-@RedisLock
-```
-##### 注解来支持aop加锁
+##### 4、提供了[@RedisLock](https://github.com/huguirong/redis-spring-boot/blob/master/redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/annotation/RedisLock.java "@RedisLock")注解来支持aop加锁
 
 
 
