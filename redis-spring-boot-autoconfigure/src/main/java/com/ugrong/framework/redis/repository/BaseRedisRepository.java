@@ -49,4 +49,16 @@ public interface BaseRedisRepository<T> {
     Long getAndIncrementBy(String key, Integer incrementBy);
 
     Long getAndIncrementBy(RedisKeyPrefix keyPrefix, String keySuffix, Integer incrementBy);
+
+    Long getAndDecrement(String key);
+
+    Long getAndDecrement(RedisKeyPrefix keyPrefix, String keySuffix);
+
+    Long getAndDecrementBy(String key, Integer decrementBy);
+
+    Long getAndDecrementBy(RedisKeyPrefix keyPrefix, String keySuffix, Integer decrementBy);
+
+    Long getExpire(String key);
+
+    Long getExpire(RedisKeyPrefix keyPrefix, String keySuffix);
 }

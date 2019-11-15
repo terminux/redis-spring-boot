@@ -15,6 +15,8 @@ public class BaseRedisRepositoryImpl<T> implements BaseRedisRepository<T> {
     @Autowired
     RedisTemplate<String, T> redisTemplate;
 
+    private static final String DELIMITER = ":";
+
     @Override
     public ValueOperations<String, T> getValueOps(String key) {
         Assert.hasText(key, "This redis key is required; it must not be null");
@@ -23,8 +25,18 @@ public class BaseRedisRepositoryImpl<T> implements BaseRedisRepository<T> {
 
     @Override
     public String getKey(RedisKeyPrefix keyPrefix, String keySuffix) {
-        validateKey(keyPrefix, keySuffix);
-        return StringUtils.trimWhitespace(keyPrefix.getPrefix()).concat(StringUtils.trimWhitespace(keySuffix));
+        Assert.hasText(keySuffix, "This redis key suffix is required; it must not be null");
+        return this.joinKey(keyPrefix, keySuffix);
+    }
+
+    private String joinKey(RedisKeyPrefix keyPrefix, String keySuffix) {
+        Assert.isTrue(keyPrefix != null && StringUtils.hasText(keyPrefix.getPrefix()),
+                "This redis key prefix is required; it must not be null");
+        String key = StringUtils.trimWhitespace(keyPrefix.getPrefix());
+        if (StringUtils.hasText(keySuffix)) {
+            key = key.concat(DELIMITER).concat(StringUtils.trimWhitespace(keySuffix));
+        }
+        return key;
     }
 
     private void validateKey(RedisKeyPrefix keyPrefix, String keySuffix) {
@@ -130,5 +142,35 @@ public class BaseRedisRepositoryImpl<T> implements BaseRedisRepository<T> {
     @Override
     public Long getAndIncrementBy(RedisKeyPrefix keyPrefix, String keySuffix, Integer incrementBy) {
         return this.getAndIncrementBy(this.getKey(keyPrefix, keySuffix), incrementBy);
+    }
+
+    @Override
+    public Long getAndDecrement(String key) {
+        return this.getAndDecrementBy(key, 1);
+    }
+
+    @Override
+    public Long getAndDecrement(RedisKeyPrefix keyPrefix, String keySuffix) {
+        return this.getAndDecrement(this.getKey(keyPrefix, keySuffix));
+    }
+
+    @Override
+    public Long getAndDecrementBy(String key, Integer decrementBy) {
+        return getValueOps(key).decrement(key, decrementBy);
+    }
+
+    @Override
+    public Long getAndDecrementBy(RedisKeyPrefix keyPrefix, String keySuffix, Integer decrementBy) {
+        return this.getAndDecrementBy(this.getKey(keyPrefix, keySuffix), decrementBy);
+    }
+
+    @Override
+    public Long getExpire(String key) {
+        return this.redisTemplate.getExpire(key);
+    }
+
+    @Override
+    public Long getExpire(RedisKeyPrefix keyPrefix, String keySuffix) {
+        return this.getExpire(this.getKey(keyPrefix, keySuffix));
     }
 }
