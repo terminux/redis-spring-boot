@@ -39,16 +39,16 @@ public abstract class AbstractListRedisRepository<T> extends AbstractRedisReposi
     public void setWithTimeOut(String keySuffix, T value, long timeout, TimeUnit timeUnit) {
         preSetProcess(value);
         BoundListOperations<String, T> operations = this.getListOps(keySuffix);
-        operations.expire(timeout, timeUnit);
         operations.leftPush(value);
+        operations.expire(timeout, timeUnit);
     }
 
     @Override
     public void setWithTimeOut(String keySuffix, T[] values, long timeout, TimeUnit timeUnit) {
         preSetProcess(values);
         BoundListOperations<String, T> operations = this.getListOps(keySuffix);
-        operations.expire(timeout, timeUnit);
         operations.leftPushAll(values);
+        operations.expire(timeout, timeUnit);
     }
 
     @Override
