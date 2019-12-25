@@ -122,7 +122,13 @@ public class LockRedisRepositoryImpl extends StringRedisRepositoryImpl implement
          * 保证在分布式系统环境下，加锁解锁必须由同一台服务器进行，
          * 不能出现你加的锁，别人给你解锁了。
          */
-        return execLuaScript(redisLockScript.getUnlockLuaScript(), toBytes(lockKey), toBytes(expectedValue));
+        boolean unlock = execLuaScript(redisLockScript.getUnlockLuaScript(), toBytes(lockKey), toBytes(expectedValue));
+        if (unlock) {
+            log.debug("Lock release successful.lockKey=[{}],expectedValue=[{}]", lockKey, expectedValue);
+        } else {
+            log.error("Failed to release redis lock.lockKey=[{}],expectedValue=[{}]", lockKey, expectedValue);
+        }
+        return unlock;
     }
 
     @Override
