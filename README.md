@@ -17,6 +17,7 @@
 <dependency>
     <groupId>com.ugrong.framework</groupId>
     <artifactId>redis-spring-boot-starter</artifactId>
+    <version>2.0.0</version>
 </dependency>
 ```
 
