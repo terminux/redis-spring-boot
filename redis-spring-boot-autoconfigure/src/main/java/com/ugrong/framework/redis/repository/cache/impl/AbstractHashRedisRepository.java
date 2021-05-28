@@ -38,8 +38,8 @@ public abstract class AbstractHashRedisRepository<K, V extends Serializable> ext
         this.validArgs(field, value);
         this.validTimeArgs(timeout, timeUnit);
         BoundHashOperations<String, K, V> operation = this.getHashOperation(keySuffix);
-        operation.expire(timeout, timeUnit);
         operation.put(field, value);
+        operation.expire(timeout, timeUnit);
     }
 
     @Override
@@ -58,8 +58,8 @@ public abstract class AbstractHashRedisRepository<K, V extends Serializable> ext
         Assert.notEmpty(map, "This redis hash data map is required; it must not be null");
         this.validTimeArgs(timeout, timeUnit);
         BoundHashOperations<String, K, V> operation = this.getHashOperation(keySuffix);
-        operation.expire(timeout, timeUnit);
         operation.putAll(map);
+        operation.expire(timeout, timeUnit);
     }
 
     @Override
