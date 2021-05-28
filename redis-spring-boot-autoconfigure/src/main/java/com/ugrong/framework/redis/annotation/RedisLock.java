@@ -1,38 +1,51 @@
 package com.ugrong.framework.redis.annotation;
 
-import java.lang.annotation.*;
+import com.ugrong.framework.redis.repository.lock.impl.RedissonLockImpl;
 
+import java.lang.annotation.*;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * The interface Redis lock.
+ */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface RedisLock {
 
     /**
-     * 锁的field
+     * 锁的类型
      *
-     * @return
+     * @return lock type
+     */
+    String lockType();
+
+    /**
+     * 要锁的字段
+     *
+     * @return lock field
      */
     String lockField();
 
     /**
-     * 锁的超时时间 单位：毫秒 默认30秒
+     * 等待时间，默认10秒
      *
-     * @return
+     * @return wait time
      */
-    long timeoutMills() default 30000;
+    long waitTime() default RedissonLockImpl.DEFAULT_LOCK_WAIT_TIME;
 
     /**
-     * 重试的时间间隔(秒)
+     * 持有锁的时间，默认30秒
      *
-     * @return
+     * @return timeout
      */
-    long tryIntervalSeconds() default 5;
+    long timeout() default RedissonLockImpl.DEFAULT_LOCK_TIMEOUT;
 
     /**
-     * 最大的重试次数
+     * 时间单位
      *
-     * @return
+     * @return time unit
      */
-    int maxTryCount() default 5;
+    TimeUnit timeUnit() default TimeUnit.SECONDS;
 
 }
