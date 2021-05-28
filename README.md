@@ -2,7 +2,7 @@
 
 ##### 1、先把项目clone到本地
 
-`git clone https://github.com/huguirong/redis-spring-boot.git`
+`git@github.com:terminux/redis-spring-boot.git`
 
 ##### 2、到项目根路径下执行
 
