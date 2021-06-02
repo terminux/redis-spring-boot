@@ -1,12 +1,14 @@
 package com.ugrong.framework.redis.samples;
 
 import com.ugrong.framework.redis.repository.cache.IStringRedisRepository;
+import com.ugrong.framework.redis.repository.channel.IRedisChannelRepository;
 import com.ugrong.framework.redis.repository.lock.IRedisLockRepository;
 import com.ugrong.framework.redis.samples.model.Student;
 import com.ugrong.framework.redis.samples.repository.StudentRedisRepository;
 import com.ugrong.framework.redis.samples.service.IStudentService;
 import com.ugrong.framework.redis.samples.type.EnumStudentCacheType;
 import com.ugrong.framework.redis.samples.type.EnumStudentLockType;
+import com.ugrong.framework.redis.samples.type.EnumStudentTopicType;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ class SamplesApplicationTests {
 
     @Autowired
     private IRedisLockRepository redisLockRepository;
+
+    @Autowired
+    private IRedisChannelRepository redisChannelRepository;
 
     private Student getStudent() {
         Student student = new Student();
@@ -86,6 +91,15 @@ class SamplesApplicationTests {
     @Test
     public void redisAnonLock() {
         studentService.testAnonLock();
+    }
+
+    /**
+     * 发布消息
+     */
+    @Test
+    public void publishMessage() {
+        Student student = this.getStudent();
+        redisChannelRepository.publish(EnumStudentTopicType.STUDENT_TOPIC, student);
     }
 
     private void tryLock(String lockField) {

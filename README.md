@@ -177,7 +177,59 @@ try {
 
 ##### 5、提供了 [@RedisLock](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/annotation/RedisLock.java "@RedisLock") 注解来支持aop加锁
 
+### 四、消息发布/订阅功能
 
+##### 消息发布者
+
+* 1、实现 [IRedisTopicType](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/domain/IRedisTopicType.java "IRedisTopicType") 接口，并且重写 [`getValue`] 方法，用来作为发布的消息主题类型，支持主题表达式，注意不要以 `/` 开头
+
+* 2、在项目中注入 [IRedisChannelRepository](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/channel/IRedisChannelRepository.java "IRedisChannelRepository") 即可使用
+
+[IRedisTopicType](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/domain/IRedisTopicType.java "IRedisTopicType") 示例：
+```java
+public enum EnumStudentTopicType implements IRedisTopicType {
+
+    STUDENT_TOPIC("student_topic");
+
+    private final String value;
+
+    EnumStudentTopicType(String value) {
+        this.value = value;
+    }
+
+    @Override
+    public String getValue() {
+        return value;
+    }
+}
+```
+
+发送消息示例：
+```
+ redisChannelRepository.publish(EnumStudentTopicType.STUDENT_TOPIC, student);
+```
+
+##### 消息订阅者
+
+* 1、实现 [RedisMessageHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/handler/RedisMessageHandler.java "RedisMessageHandler") 接口，并且重写 [`handle`] 方法，用来接受消息
+
+* 2、在上一步 [RedisMessageHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/handler/RedisMessageHandler.java "RedisMessageHandler") 的实现类中添加 [RedisHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/annotation/RedisHandler.java "RedisHandler") 注解，并且修改 `topic` 属性，表示订阅的主题，支持主题表达式，注意不要以 `/` 开头
+
+示例：
+```java
+@Component
+@RedisHandler(topic = "student_topic")
+@Slf4j
+public class StudentMessageHandler implements RedisMessageHandler<Student> {
+
+    @Override
+    public void handle(Student student) {
+        System.out.println(JsonUtil.toJsonStr(student));
+    }
+}
+```
+
+> 注：相关单元测试可以在 `redis-spring-boot/redis-spring-boot-samples/src/test/java/com/ugrong/framework/redis/samples/SamplesApplicationTests.java` 类中查
 
 
 

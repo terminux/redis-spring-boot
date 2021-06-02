@@ -15,7 +15,7 @@ public abstract class AbstractRedisRepository<T extends IRedisType> implements I
     protected final String getKey(T type, String keySuffix) {
         Assert.isTrue(type != null && StringUtils.isNotBlank(type.getType()), "This redis type is required; it must not be null");
         //Assert.notBlank(keySuffix, "This redis key suffix is required; it must not be null");
-        String prefix = type.getType().concat(REDIS_KEY_DELIMITER);
+        String prefix = type.getType().concat(this.getKeyDelimiter());
         if (StringUtils.isBlank(keySuffix)) {
             return prefix.concat(this.getTypeValue(type));
         }
@@ -23,7 +23,7 @@ public abstract class AbstractRedisRepository<T extends IRedisType> implements I
     }
 
     protected final String getKeyPrefix(T type) {
-        return this.getTypeValue(type).concat(REDIS_KEY_DELIMITER);
+        return this.getTypeValue(type).concat(this.getKeyDelimiter());
     }
 
     protected final String getTypeValue(T type) {
