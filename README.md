@@ -1,6 +1,16 @@
-# redis-spring-boot
+# redis-spring-boot 
 
-### 一、基本配置
+> 一个轻量级用于简化redis操作，基于spring boot的starter组件，并且提供了基于redis的分布式锁以及动态消息发布/订阅的功能
+
+* [基本配置](#基本配置)
+
+* [开始使用](#开始使用)
+
+* [分布式锁](#分布式锁)
+
+* [动态消息发布及订阅](#动态消息发布及订阅)
+
+### 基本配置
 
 ##### 1、先把项目clone到本地
 
@@ -31,7 +41,7 @@ spring:
     port: 6379
 ```
 
-### 二、开始使用
+### 开始使用
 
 ##### 1、假如我们需要序列化一个学生类到redis，需要实现序列化接口，例如：
 
@@ -73,7 +83,7 @@ public enum EnumStudentCacheType implements IRedisCacheType {
 
 > 这样可以方便在key很多的情况下方便我们管理key,同时根据不同的业务场景统一key的规范
 
-##### 3、创建 [`StudentRedisRepository`]，并且继承 [AbstractSimpleRedisRepository](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/cache/impl/AbstractSimpleRedisRepository.java "AbstractSimpleRedisRepository") ，重写它的 [`getCacheType`] 方法，例如：
+##### 3、创建 [StudentRedisRepository](./redis-spring-boot-samples/src/main/java/com/ugrong/framework/redis/samples/repository/StudentRedisRepository.java "StudentRedisRepository")，并且继承 [AbstractSimpleRedisRepository](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/cache/impl/AbstractSimpleRedisRepository.java "AbstractSimpleRedisRepository") ，重写它的 [`getCacheType`] 方法，例如：
 
 ```java
 
@@ -107,14 +117,14 @@ private IStringRedisRepository stringRedisRepository;
 
 ##### 还提供了 [AbstractHashRedisRepository](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/cache/impl/AbstractHashRedisRepository.java "AbstractHashRedisRepository")，[AbstractListRedisRepository](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/cache/impl/AbstractListRedisRepository.java "AbstractListRedisRepository") ，可以自行查看和使用
 
-### 三、锁的功能
+### 分布式锁
 
 ##### 1、项目中还支持了redis分布式锁，可以在 [IRedisLockRepository](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/lock/IRedisLockRepository.java "IRedisLockRepository") 中查看提供的方法和详细注释
 
 ##### 2、在项目中注入 [IRedisLockRepository](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/lock/IRedisLockRepository.java "IRedisLockRepository") ：
 
 ```java
- @Autowired
+@Autowired
 private IRedisLockRepository redisLockRepository;
 ```
 
@@ -160,7 +170,7 @@ public enum EnumStudentLockType implements IRedisLockType {
 
 ##### 4.2、对id为 `123456` 的学生进行加锁
 
-```
+```java
 String lockField = "123456";
 try {
     if (redisLockRepository.tryLock(EnumStudentLockType.STUDENT_LOCK, lockField, 20, 20, TimeUnit.SECONDS)) {
@@ -177,7 +187,7 @@ try {
 
 ##### 5、提供了 [@RedisLock](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/annotation/RedisLock.java "@RedisLock") 注解来支持aop加锁
 
-### 四、消息发布/订阅功能
+### 动态消息发布及订阅
 
 ##### 消息发布者
 
@@ -205,7 +215,7 @@ public enum EnumStudentTopicType implements IRedisTopicType {
 ```
 
 发送消息示例：
-```
+```java
  redisChannelRepository.publish(EnumStudentTopicType.STUDENT_TOPIC, student);
 ```
 
@@ -229,7 +239,10 @@ public class StudentMessageHandler implements RedisMessageHandler<Student> {
 }
 ```
 
-> 注：相关单元测试可以在 `redis-spring-boot/redis-spring-boot-samples/src/test/java/com/ugrong/framework/redis/samples/SamplesApplicationTests.java` 类中查
+
+****
+
+> 注：相关单元测试可以在 [SamplesApplicationTests](./redis-spring-boot-samples/src/test/java/com/ugrong/framework/redis/samples/SamplesApplicationTests.java "SamplesApplicationTests") 类中查
 
 
 
