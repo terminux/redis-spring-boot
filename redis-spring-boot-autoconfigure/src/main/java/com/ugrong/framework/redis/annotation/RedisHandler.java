@@ -7,7 +7,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * The interface Redis message handler.
+ * The interface Redis handler.
  */
 @Target({TYPE})
 @Retention(RUNTIME)

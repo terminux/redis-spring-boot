@@ -221,7 +221,7 @@ public enum EnumStudentTopicType implements IRedisTopicType {
 
 ##### 消息订阅者
 
-* 1、实现 [RedisMessageHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/handler/RedisMessageHandler.java "RedisMessageHandler") 接口，并且重写 [`handle`] 方法，用来接受消息
+* 1、实现 [RedisMessageHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/handler/RedisMessageHandler.java "RedisMessageHandler") 接口，并且重写 [`handle`] 方法，用来接收消息
 
 * 2、在上一步 [RedisMessageHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/handler/RedisMessageHandler.java "RedisMessageHandler") 的实现类中添加 [RedisHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/annotation/RedisHandler.java "RedisHandler") 注解，并且修改 `topic` 属性，表示订阅的主题，支持主题表达式，注意不要以 `/` 开头
 
@@ -234,7 +234,7 @@ public class StudentMessageHandler implements RedisMessageHandler<Student> {
 
     @Override
     public void handle(Student student) {
-        System.out.println(JsonUtil.toJsonStr(student));
+        System.out.println(student);
     }
 }
 ```
