@@ -233,8 +233,8 @@ public enum EnumStudentTopicType implements IRedisTopicType {
 public class StudentMessageHandler implements RedisMessageHandler<Student> {
 
     @Override
-    public void handle(Student student) {
-        System.out.println(student);
+    public void handle(Student student, String topic) {
+        log.info("Handle redis message.topic=[{}], received=[{}]", topic, student);
     }
 }
 ```
