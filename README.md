@@ -1,8 +1,16 @@
+# redis-spring-boot
+
+> 一个轻量级用于简化redis操作，基于spring boot的starter组件，并且提供了基于redis的分布式锁
+
+### 1.x 版本不再处于活跃的开发阶段，目前处于维护模式，请使用更高版本。
+
 ### 一、基本配置
 
 ##### 1、先把项目clone到本地
 
-`git@github.com:terminux/redis-spring-boot.git`
+```shell
+git clone git@github.com:terminux/redis-spring-boot.git
+```
 
 ##### 2、到项目根路径下执行
 
