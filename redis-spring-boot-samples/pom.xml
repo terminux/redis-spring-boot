@@ -9,6 +9,7 @@
     </parent>
 
     <artifactId>redis-spring-boot-samples</artifactId>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>

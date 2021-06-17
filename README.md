@@ -14,11 +14,15 @@
 
 ##### 1、先把项目clone到本地
 
-> `git clone git@github.com:terminux/redis-spring-boot.git`
+```shell
+git clone git@github.com:terminux/redis-spring-boot.git
+```
 
-##### 2、进入到 `redis-spring-boot-starter` 目录下执行
+##### 2、进入到项目根目录下执行
 
-> `mvn -DskipTests clean install`
+```shell
+mvn -pl '!redis-spring-boot-samples' -DskipTests clean install
+```
 
 ##### 3、给项目添加依赖
 
