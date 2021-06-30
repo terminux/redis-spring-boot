@@ -1,5 +1,14 @@
 package com.ugrong.framework.redis.samples;
 
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.ugrong.framework.redis.domain.IRedisLockType;
 import com.ugrong.framework.redis.repository.cache.IStringRedisRepository;
 import com.ugrong.framework.redis.repository.channel.IRedisChannelRepository;
 import com.ugrong.framework.redis.repository.lock.IRedisLockRepository;
@@ -9,12 +18,6 @@ import com.ugrong.framework.redis.samples.service.IStudentService;
 import com.ugrong.framework.redis.samples.type.EnumStudentCacheType;
 import com.ugrong.framework.redis.samples.type.EnumStudentLockType;
 import com.ugrong.framework.redis.samples.type.EnumStudentTopicType;
-import org.apache.commons.lang3.RandomUtils;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 class SamplesApplicationTests {
@@ -103,8 +106,11 @@ class SamplesApplicationTests {
     }
 
     private void tryLock(String lockField) {
+        IRedisLockType lockType = EnumStudentLockType.STUDENT_LOCK;
+        AtomicBoolean isLock = new AtomicBoolean(Boolean.FALSE);
         try {
-            if (redisLockRepository.tryLock(EnumStudentLockType.STUDENT_LOCK, lockField, 20, 20, TimeUnit.SECONDS)) {
+            isLock.set(redisLockRepository.tryLock(lockType, lockField, 20, 20, TimeUnit.SECONDS));
+            if (isLock.get()) {
                 System.out.println("获取到锁，当前线程名称：" + Thread.currentThread().getName());
                 //休息3秒 模拟业务处理
                 TimeUnit.SECONDS.sleep(3);
@@ -112,7 +118,9 @@ class SamplesApplicationTests {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            redisLockRepository.unlock(EnumStudentLockType.STUDENT_LOCK, lockField);
+            if (isLock.get()) {
+                redisLockRepository.unlock(lockType, lockField);
+            }
         }
     }
 

@@ -1,15 +1,19 @@
 package com.ugrong.framework.redis.repository.lock.aop;
 
-import com.ugrong.framework.redis.annotation.RedisLock;
-import com.ugrong.framework.redis.domain.IRedisLockType;
-import com.ugrong.framework.redis.repository.lock.IRedisLockRepository;
-import lombok.extern.slf4j.Slf4j;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.util.Assert;
+
+import com.ugrong.framework.redis.annotation.RedisLock;
+import com.ugrong.framework.redis.domain.IRedisLockType;
+import com.ugrong.framework.redis.repository.lock.IRedisLockRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Aspect
 @Slf4j
@@ -31,8 +35,11 @@ public class RedisLockAspect {
         RedisLock redisLock = ((MethodSignature) joinPoint.getSignature()).getMethod().getAnnotation(RedisLock.class);
         this.validRedisLock(redisLock);
         IRedisLockType lockType = redisLock::lockType;
+        String lockField = redisLock.lockField();
+        AtomicBoolean isLock = new AtomicBoolean(Boolean.FALSE);
         try {
-            if (redisLockRepository.tryLock(lockType, redisLock.lockField(), redisLock.waitTime(), redisLock.timeout(), redisLock.timeUnit())) {
+            isLock.set(redisLockRepository.tryLock(lockType, lockField, redisLock.waitTime(), redisLock.timeout(), redisLock.timeUnit()));
+            if (isLock.get()) {
                 //获取到锁
                 return joinPoint.proceed();
             }
@@ -41,7 +48,10 @@ public class RedisLockAspect {
             log.error("Failed to process redis lock.", e);
             throw e;
         } finally {
-            redisLockRepository.unlock(lockType, redisLock.lockField());
+            //进行解锁
+            if (isLock.get()) {
+                redisLockRepository.unlock(lockType, lockField);
+            }
         }
     }
 

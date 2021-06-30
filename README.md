@@ -136,18 +136,22 @@ private IRedisLockRepository redisLockRepository;
 
 ##### 伪代码如下：
 
-```
+```java
+AtomicBoolean isLock = new AtomicBoolean(Boolean.FALSE);
 try {
-        if (redisLockRepository.tryLock(...)) {
-            //获取到锁
-            //do something
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        //进行解锁
+    isLock.set(redisLockRepository.tryLock(...));
+    if (isLock.get()) {
+        //获取到锁
+        //do something
+    }
+} catch (InterruptedException e) {
+    e.printStackTrace();
+} finally {
+    //进行解锁
+    if (isLock.get()) {
         redisLockRepository.unlock(...);
     }
+}
 ```
 
 ##### 4、示例
@@ -175,17 +179,22 @@ public enum EnumStudentLockType implements IRedisLockType {
 ##### 4.2、对id为 `123456` 的学生进行加锁
 
 ```java
+IRedisLockType lockType = EnumStudentLockType.STUDENT_LOCK;
 String lockField = "123456";
+AtomicBoolean isLock = new AtomicBoolean(Boolean.FALSE);
 try {
-    if (redisLockRepository.tryLock(EnumStudentLockType.STUDENT_LOCK, lockField, 20, 20, TimeUnit.SECONDS)) {
-        //获取到锁
-        //do something
+    isLock.set(redisLockRepository.tryLock(lockType, lockField, 20, 20, TimeUnit.SECONDS));
+    if (isLock.get()) {
+       //获取到锁
+       //do something
     }
-} catch (Exception e) {
+} catch (InterruptedException e) {
     e.printStackTrace();
 } finally {
     //进行解锁
-    redisLockRepository.unlock(EnumStudentLockType.STUDENT_LOCK, lockField);
+    if (isLock.get()) {
+        redisLockRepository.unlock(lockType, lockField);
+    }
 }
 ```
 
