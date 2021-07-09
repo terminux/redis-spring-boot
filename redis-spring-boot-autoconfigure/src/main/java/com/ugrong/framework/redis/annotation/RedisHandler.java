@@ -13,11 +13,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface RedisHandler {
 
-    /**
-     * 订阅的主题
-     *
-     * @return topic
-     */
-    String topic();
+	/**
+	 * 订阅的主题
+	 *
+	 * @return topic
+	 */
+	String topic();
 
 }

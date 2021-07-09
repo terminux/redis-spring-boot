@@ -2,8 +2,8 @@ package com.ugrong.framework.redis.domain;
 
 public interface IRedisType {
 
-    String getType();
+	String getType();
 
-    String getValue();
+	String getValue();
 
 }

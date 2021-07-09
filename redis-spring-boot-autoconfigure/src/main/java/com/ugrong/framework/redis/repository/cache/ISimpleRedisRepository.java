@@ -7,17 +7,17 @@ import java.util.concurrent.TimeUnit;
 
 public interface ISimpleRedisRepository<T extends Serializable> extends IRedisObjectRepository<T> {
 
-    void set(String keySuffix, T value);
+	void set(String keySuffix, T value);
 
-    Optional<T> get(String keySuffix);
+	Optional<T> get(String keySuffix);
 
-    List<T> getAll();
+	List<T> getAll();
 
-    void setWithDefaultTimeout(String keySuffix, T value);
+	void setWithDefaultTimeout(String keySuffix, T value);
 
-    void setWithTimeout(String keySuffix, T value, long timeout, TimeUnit timeUnit);
+	void setWithTimeout(String keySuffix, T value, long timeout, TimeUnit timeUnit);
 
-    void expireWithDefaultTimeout(String keySuffix);
+	void expireWithDefaultTimeout(String keySuffix);
 
-    void expire(String keySuffix, long timeout, TimeUnit timeUnit);
+	void expire(String keySuffix, long timeout, TimeUnit timeUnit);
 }

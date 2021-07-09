@@ -1,24 +1,24 @@
 package com.ugrong.framework.redis.repository.cache;
 
 
-import com.ugrong.framework.redis.domain.IRedisCacheType;
-
 import java.io.Serializable;
 import java.util.Set;
 
+import com.ugrong.framework.redis.domain.IRedisCacheType;
+
 public interface IRedisObjectRepository<T extends Serializable> extends IRedisCacheRepository<T> {
 
-    IRedisCacheType getCacheType();
+	IRedisCacheType getCacheType();
 
-    String getKey(String keySuffix);
+	String getKey(String keySuffix);
 
-    String getKeyPrefix();
+	String getKeyPrefix();
 
-    Boolean remove(String keySuffix);
+	Boolean remove(String keySuffix);
 
-    Boolean hasKey(String keySuffix);
+	Boolean hasKey(String keySuffix);
 
-    Long getExpire(String keySuffix);
+	Long getExpire(String keySuffix);
 
-    Set<String> keys();
+	Set<String> keys();
 }

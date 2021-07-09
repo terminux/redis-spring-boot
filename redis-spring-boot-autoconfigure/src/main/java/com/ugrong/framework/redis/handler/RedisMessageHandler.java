@@ -4,6 +4,6 @@ import java.io.Serializable;
 
 public interface RedisMessageHandler<T extends Serializable> {
 
-    void handle(T payload, String topic);
+	void handle(T payload, String topic);
 
 }

@@ -1,4 +1,4 @@
-# redis-spring-boot 
+# redis-spring-boot
 
 > 一个轻量级用于简化redis操作，基于spring boot的starter组件，并且提供了基于redis的分布式锁以及动态消息发布/订阅的功能
 
@@ -204,11 +204,17 @@ try {
 
 ##### 消息发布者
 
-* 1、实现 [IRedisTopicType](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/domain/IRedisTopicType.java "IRedisTopicType") 接口，并且重写 [`getValue`] 方法，用来作为发布的消息主题类型，支持主题表达式，注意不要以 `/` 开头
+*
+1、实现 [IRedisTopicType](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/domain/IRedisTopicType.java "IRedisTopicType")
+接口，并且重写 [`getValue`] 方法，用来作为发布的消息主题类型，支持主题表达式，注意不要以 `/` 开头
 
-* 2、在项目中注入 [IRedisChannelRepository](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/channel/IRedisChannelRepository.java "IRedisChannelRepository") 即可使用
+*
+2、在项目中注入 [IRedisChannelRepository](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/repository/channel/IRedisChannelRepository.java "IRedisChannelRepository")
+即可使用
 
-[IRedisTopicType](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/domain/IRedisTopicType.java "IRedisTopicType") 示例：
+[IRedisTopicType](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/domain/IRedisTopicType.java "IRedisTopicType")
+示例：
+
 ```java
 public enum EnumStudentTopicType implements IRedisTopicType {
 
@@ -228,17 +234,24 @@ public enum EnumStudentTopicType implements IRedisTopicType {
 ```
 
 发送消息示例：
+
 ```java
  redisChannelRepository.publish(EnumStudentTopicType.STUDENT_TOPIC, student);
 ```
 
 ##### 消息订阅者
 
-* 1、实现 [RedisMessageHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/handler/RedisMessageHandler.java "RedisMessageHandler") 接口，并且重写 [`handle`] 方法，用来接收消息
+*
+1、实现 [RedisMessageHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/handler/RedisMessageHandler.java "RedisMessageHandler")
+接口，并且重写 [`handle`] 方法，用来接收消息
 
-* 2、在上一步 [RedisMessageHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/handler/RedisMessageHandler.java "RedisMessageHandler") 的实现类中添加 [RedisHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/annotation/RedisHandler.java "RedisHandler") 注解，并且修改 `topic` 属性，表示订阅的主题，支持主题表达式，注意不要以 `/` 开头
+*
+2、在上一步 [RedisMessageHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/handler/RedisMessageHandler.java "RedisMessageHandler")
+的实现类中添加 [RedisHandler](./redis-spring-boot-autoconfigure/src/main/java/com/ugrong/framework/redis/annotation/RedisHandler.java "RedisHandler")
+注解，并且修改 `topic` 属性，表示订阅的主题，支持主题表达式，注意不要以 `/` 开头
 
 示例：
+
 ```java
 @Component
 @RedisHandler(topic = "student_topic")
@@ -251,7 +264,6 @@ public class StudentMessageHandler implements RedisMessageHandler<Student> {
     }
 }
 ```
-
 
 ****
 
