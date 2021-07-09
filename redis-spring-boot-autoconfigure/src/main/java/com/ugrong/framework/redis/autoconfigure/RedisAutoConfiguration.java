@@ -1,5 +1,19 @@
 package com.ugrong.framework.redis.autoconfigure;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper.DefaultTyping;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.ugrong.framework.redis.listener.MessageHandlerBeanLifecycleListener;
 import com.ugrong.framework.redis.repository.cache.IStringRedisRepository;
 import com.ugrong.framework.redis.repository.cache.impl.StringRedisRepositoryImpl;
@@ -22,17 +36,65 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Configuration
 @ConditionalOnClass({RedisOperations.class})
 @AutoConfigureBefore({RedissonAutoConfiguration.class})
 public class RedisAutoConfiguration {
 
+    private static final String DEFAULT_DATA_PATTERN = "yyyy-MM-dd";
+
+    private static final String DEFAULT_DATA_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
     @Bean
     @ConditionalOnMissingBean
     public GenericJackson2JsonRedisSerializer jsonRedisSerializer() {
-        return new GenericJackson2JsonRedisSerializer();
+        ObjectMapper mapper = this.newMapper();
+        //mapper.enableDefaultTyping(DefaultTyping.NON_FINAL, As.PROPERTY);
+        mapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, DefaultTyping.NON_FINAL, As.PROPERTY);
+        return new GenericJackson2JsonRedisSerializer(mapper);
     }
+
+    public ObjectMapper newMapper() {
+        Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+        //由于js的number只能表示15个数字，Long类型数字用String格式返回
+        builder.serializerByType(Long.class, ToStringSerializer.instance);
+        builder.serializerByType(Long.TYPE, ToStringSerializer.instance);
+        builder.serializerByType(long.class, ToStringSerializer.instance);
+
+        //日期类型转换
+        builder.simpleDateFormat(DEFAULT_DATA_TIME_PATTERN);
+
+        //LocalDateTime按照 "yyyy-MM-dd HH:mm:ss"的格式进行序列化、反序列化
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DEFAULT_DATA_TIME_PATTERN);
+        javaTimeModule.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(dateTimeFormatter));
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(dateTimeFormatter));
+
+        //LocalDate按照 "yyyy-MM-dd"的格式进行序列化、反序列化
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DEFAULT_DATA_PATTERN);
+        javaTimeModule.addDeserializer(LocalDate.class, new LocalDateDeserializer(dateFormatter));
+        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(dateFormatter));
+
+        //是否缩放排列输出，默认false
+        // builder.indentOutput(true);
+        builder.timeZone("Asia/Shanghai");
+
+        builder.modules(
+                //识别Java8时间
+                new ParameterNamesModule(),
+                new Jdk8Module(),
+                javaTimeModule
+        );
+        builder.visibility(PropertyAccessor.ALL, Visibility.ANY);
+        return builder.build();
+    }
+
 
     @Bean
     //@ConditionalOnMissingBean

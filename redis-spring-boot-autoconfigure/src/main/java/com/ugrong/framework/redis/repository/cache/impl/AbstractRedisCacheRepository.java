@@ -30,7 +30,8 @@ public abstract class AbstractRedisCacheRepository<T extends Serializable> exten
     }
 
     protected final Set<String> keys(IRedisCacheType cacheType) {
-        return this.geTemplate().keys(this.getKeyPrefix(cacheType).concat("*"));
+        return this.geTemplate()
+                .keys(this.getKey(cacheType, null).concat(this.getKeyDelimiter()).concat(REDIS_KEY_PATTERN));
     }
 
     protected void expire(IRedisCacheType cacheType, String suffix, long timeout, TimeUnit timeUnit) {
