@@ -7,7 +7,6 @@
 	<option name="FORMATTER_TAGS_ENABLED" value="true"/>
 	<JavaCodeStyleSettings>
 		<option name="TEST_NAME_SUFFIX" value="Tests"/>
-		<option name="VISIBILITY" value="packageLocal"/>
 		<option name="CLASS_NAMES_IN_JAVADOC" value="3"/>
 		<option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99"/>
 		<option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99"/>
