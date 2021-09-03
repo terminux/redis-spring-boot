@@ -4,13 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import com.ugrong.framework.redis.annotation.RedisHandler;
-import com.ugrong.framework.redis.handler.RedisMessageHandler;
+import com.ugrong.framework.redis.handler.IRedisMessageHandler;
+import com.ugrong.framework.redis.samples.constants.SamplesConstants;
 import com.ugrong.framework.redis.samples.model.Student;
 
 @Component
-@RedisHandler(topic = "student_topic")
+@RedisHandler(topic = SamplesConstants.STUDENT_TOPIC_VALUE)
 @Slf4j
-public class StudentMessageHandler implements RedisMessageHandler<Student> {
+public class StudentMessageHandler implements IRedisMessageHandler<Student> {
 
 	@Override
 	public void handle(Student student, String topic) {

@@ -4,6 +4,7 @@ package com.ugrong.framework.redis.repository.cache.impl;
 import java.io.Serializable;
 import java.util.Set;
 
+import com.ugrong.framework.redis.domain.IRedisCacheType;
 import com.ugrong.framework.redis.repository.cache.IRedisObjectRepository;
 
 public abstract class AbstractRedisObjectRepository<T extends Serializable> extends AbstractRedisCacheRepository<T> implements IRedisObjectRepository<T> {
@@ -15,7 +16,9 @@ public abstract class AbstractRedisObjectRepository<T extends Serializable> exte
 
 	@Override
 	public String getKeyPrefix() {
-		return this.getKeyPrefix(this.getCacheType());
+		IRedisCacheType cacheType = this.getCacheType();
+		super.validType(cacheType);
+		return cacheType.getType().concat(this.getKeyDelimiter());
 	}
 
 	@Override

@@ -10,9 +10,10 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 
 import com.ugrong.framework.redis.annotation.RedisHandler;
 import com.ugrong.framework.redis.domain.IRedisTopicType;
-import com.ugrong.framework.redis.handler.RedisMessageHandler;
+import com.ugrong.framework.redis.handler.IRedisMessageHandler;
 import com.ugrong.framework.redis.repository.channel.IRedisChannelRepository;
 import com.ugrong.framework.redis.utils.ProxyUtil;
+import com.ugrong.framework.redis.utils.RedisKeyUtil;
 
 /**
  * message handler bean 生命周期监听器
@@ -32,8 +33,8 @@ public class MessageHandlerBeanLifecycleListener implements BeanPostProcessor {
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if (RedisMessageHandler.class.isAssignableFrom(bean.getClass())) {
-			RedisMessageHandler<?> handler = (RedisMessageHandler<?>) bean;
+		if (IRedisMessageHandler.class.isAssignableFrom(bean.getClass())) {
+			IRedisMessageHandler<?> handler = (IRedisMessageHandler<?>) bean;
 			Class<?> handlerClass = ProxyUtil.getOriginClass(handler);
 			if (handlerClass != null) {
 				RedisHandler redisHandler = handlerClass.getAnnotation(RedisHandler.class);
@@ -45,13 +46,13 @@ public class MessageHandlerBeanLifecycleListener implements BeanPostProcessor {
 		return bean;
 	}
 
-	private void addMessageListener(RedisMessageHandler<?> handler, String topic) {
-		String fullTopic = IRedisTopicType.DEFAULT_REDIS_TOPIC_TYPE
-				.concat(IRedisChannelRepository.TOPIC_REDIS_KEY_DELIMITER).concat(topic);
+	private void addMessageListener(IRedisMessageHandler<?> handler, String topic) {
+		String fullTopic = RedisKeyUtil.concatKey(IRedisTopicType.DEFAULT_REDIS_TOPIC_TYPE,
+				IRedisChannelRepository.TOPIC_REDIS_KEY_DELIMITER, topic);
 		container.addMessageListener(this.newListener(handler), new PatternTopic(fullTopic));
 	}
 
-	public MessageListenerAdapter newListener(RedisMessageHandler<?> handler) {
+	public MessageListenerAdapter newListener(IRedisMessageHandler<?> handler) {
 		MessageListenerAdapter adapter = new MessageListenerAdapter(handler, LISTENER_METHOD);
 		adapter.setSerializer(serializer);
 		adapter.afterPropertiesSet();
