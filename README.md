@@ -31,7 +31,7 @@ mvn -pl '!redis-spring-boot-samples' -DskipTests clean install
 <dependency>
     <groupId>com.ugrong.framework</groupId>
     <artifactId>redis-spring-boot-starter</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 </dependency>
 ```
 
